@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red Eye Café — My Orders</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .orders-page { max-width: 860px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+    .orders-hero { text-align: center; margin-bottom: 3rem; }
+    .orders-hero .section-eyebrow { margin-bottom: 0.5rem; display: block; }
+    .orders-hero h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--cream); margin-bottom: 0.5rem; }
+    .orders-hero p  { color: var(--muted); font-size: 0.88rem; }
+
+    /* Summary strip */
+    .summary-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2.5rem; }
+    .sum-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 1rem 1.3rem; }
+    .sum-lbl  { font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.25rem; }
+    .sum-val  { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--cream); }
+    .sum-sub  { font-size: 0.7rem; color: var(--muted); margin-top: 0.1rem; }
+
+    /* Order card */
+    .order-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 4px; margin-bottom: 1rem; overflow: hidden;
+      transition: border-color 0.22s;
+    }
+    .order-card:hover { border-color: rgba(212,168,83,0.35); }
+    .order-card.expanded { border-color: rgba(212,168,83,0.5); }
+
+    /* Card header row */
+    .oc-head {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 1.3rem; cursor: pointer;
+    }
+    .oc-head:hover { background: rgba(255,255,255,0.015); }
+    .oc-date-block { flex-shrink: 0; text-align: center; width: 44px; }
+    .oc-day   { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--cream); line-height: 1; }
+    .oc-month { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .oc-divider { width: 1px; height: 36px; background: var(--border); flex-shrink: 0; }
+    .oc-info { flex: 1; min-width: 0; }
+    .oc-id   { font-family: monospace; font-size: 0.72rem; color: var(--muted); }
+    .oc-items-preview { font-size: 0.83rem; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.1rem; }
+    .oc-right { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+    .oc-amount { color: var(--gold); font-weight: 600; font-size: 1rem; }
+    .oc-arrow  { color: var(--muted); font-size: 0.75rem; transition: transform 0.22s; }
+    .order-card.expanded .oc-arrow { transform: rotate(180deg); }
+
+    /* Card body — receipt */
+    .oc-body { display: none; border-top: 1px solid var(--border); }
+    .order-card.expanded .oc-body { display: block; }
+
+    /* The receipt itself */
+    .receipt-paper {
+      padding: 1.8rem;
+    }
+    .receipt-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding-bottom: 1.2rem; border-bottom: 1px solid var(--border); margin-bottom: 1.3rem;
+    }
+    .rh-left {}
+    .rh-cafe-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--cream); }
+    .rh-cafe-name span { color: var(--red); }
+    .rh-addr { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; line-height: 1.5; }
+    .rh-right { text-align: right; }
+    .rh-receipt-id { font-family: monospace; font-size: 0.8rem; color: var(--muted); }
+    .rh-date { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* 2 col meta */
+    .receipt-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.3rem; }
+    .rm-lbl { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+    .rm-val { font-size: 0.82rem; color: var(--cream); line-height: 1.6; }
+
+    /* Items table */
+    .receipt-items-lbl {
+      font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.5rem;
+    }
+    .receipt-item {
+      display: flex; align-items: center; gap: 0.7rem;
+      padding: 0.55rem 0; border-bottom: 1px solid rgba(42,31,24,0.45);
+    }
+    .receipt-item:last-child { border-bottom: none; }
+    .ri-icon  { font-size: 1.1rem; width: 24px; text-align: center; flex-shrink: 0; }
+    .ri-name  { flex: 1; color: var(--cream); font-size: 0.85rem; }
+    .ri-qty   { font-size: 0.73rem; color: var(--muted); background: var(--bg3); padding: 0.1rem 0.4rem; border-radius: 3px; flex-shrink: 0; }
+    .ri-unit  { font-size: 0.75rem; color: var(--muted); min-width: 52px; text-align: right; flex-shrink: 0; }
+    .ri-total { font-weight: 600; color: var(--gold); font-size: 0.88rem; min-width: 58px; text-align: right; flex-shrink: 0; }
+
+    /* Totals */
+    .receipt-totals { border-top: 1px solid rgba(212,168,83,0.2); padding-top: 0.8rem; margin-top: 0.5rem; }
+    .rt-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.3rem; }
+    .rt-lbl { color: var(--muted); }
+    .rt-val { color: var(--cream); }
+    .rt-grand { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; }
+    .rt-grand .rt-lbl { color: var(--cream); font-size: 1rem; }
+    .rt-grand .rt-val { color: var(--gold); }
+
+    /* Status pill */
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.22rem 0.7rem; border-radius: 20px;
+      font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500;
+    }
+    .sp-pending   { background: rgba(230,126,34,0.12);  color: #e67e22; border: 1px solid rgba(230,126,34,0.3); }
+    .sp-preparing { background: rgba(52,152,219,0.12);  color: #3498db; border: 1px solid rgba(52,152,219,0.3); }
+    .sp-ready     { background: rgba(39,174,96,0.12);   color: #27ae60; border: 1px solid rgba(39,174,96,0.3); }
+    .sp-delivered { background: rgba(127,140,141,0.12); color: #95a5a6; border: 1px solid rgba(127,140,141,0.3); }
+
+    /* Thank you bar */
+    .receipt-footer {
+      text-align: center; padding: 0.8rem 0 0;
+      margin-top: 0.5rem; border-top: 1px dashed var(--border);
+      font-size: 0.73rem; color: var(--muted);
+    }
+
+    /* Action bar */
+    .receipt-actions {
+      display: flex; gap: 0.7rem; padding: 0.8rem 1.3rem;
+      border-top: 1px solid var(--border); background: rgba(0,0,0,0.1);
+    }
+
+    /* Delivery address box */
+    .addr-box {
+      background: var(--bg3); border-radius: 3px; padding: 0.6rem 0.9rem;
+      font-size: 0.78rem; color: var(--muted); line-height: 1.6;
+    }
+
+    /* Empty state */
+    .empty-orders {
+      text-align: center; padding: 5rem 2rem;
+    }
+    .empty-icon { font-size: 4rem; opacity: 0.25; margin-bottom: 1.2rem; }
+    .empty-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--cream); margin-bottom: 0.5rem; }
+    .empty-sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+    /* Login prompt */
+    .login-prompt {
+      text-align: center; padding: 5rem 2rem;
+    }
+
+    @media(max-width:600px) {
+      .summary-strip { grid-template-columns: 1fr 1fr; }
+      .receipt-meta  { grid-template-columns: 1fr; }
+      .receipt-header { flex-direction: column; gap: 0.8rem; }
+      .rh-right { text-align: left; }
+      .oc-head { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">👁 <span>Red</span> Eye Café</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="menu.html">Menu</a></li>
+    <li><a href="about.html">About Us</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <div id="auth-btns" style="display:flex;gap:0.5rem;">
+      <a href="auth.html"><button class="btn btn-outline">Login</button></a>
+    </div>
+    <div id="user-display" style="display:none;" class="user-indicator">
+      <span>👤</span><span id="username-text"></span>
+      <button class="btn btn-outline" onclick="logout()" style="margin-left:0.5rem;padding:0.35rem 0.8rem;font-size:0.72rem;">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<div class="orders-page">
+  <div class="orders-hero">
+    <span class="section-eyebrow">Your account</span>
+    <h1>Order History</h1>
+    <p>Every cup, every bite — all your orders in one place.</p>
+  </div>
+  <div id="orders-root"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="script.js"></script>
+<script>
+async function loadMyOrders() {
+  const root = document.getElementById('orders-root');
+
+  if (!currentUser) {
+    root.innerHTML = `
+      <div class="login-prompt">
+        <div style="font-size:3.5rem;opacity:0.25;margin-bottom:1.2rem;">🔐</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--cream);margin-bottom:0.5rem;">Sign in to view your orders</div>
+        <div style="color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;">You need to be logged in to see your order history.</div>
+        <a href="auth.html"><button class="btn btn-gold">Login to My Account</button></a>
+      </div>`;
+    return;
+  }
+
+  root.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--muted);">Loading your orders…</div>`;
+
+  try {
+    const res  = await fetch(`/api/orders/${encodeURIComponent(currentUser.email)}`);
+    const data = await res.json();
+    const orders = data.orders || [];
+    renderMyOrders(orders);
+  } catch(e) {
+    root.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--muted);">Could not load orders. Please try again.</div>`;
+  }
+}
+
+function renderMyOrders(orders) {
+  const root = document.getElementById('orders-root');
+
+  if (!orders.length) {
+    root.innerHTML = `
+      <div class="empty-orders">
+        <div class="empty-icon">☕</div>
+        <div class="empty-title">No orders yet</div>
+        <div class="empty-sub">Looks like you haven't ordered anything yet. Let's fix that!</div>
+        <a href="menu.html"><button class="btn btn-gold">Browse Menu</button></a>
+      </div>`;
+    return;
+  }
+
+  const totalSpent    = orders.reduce((s,o) => s+(o.total||0), 0);
+  const totalItems    = orders.reduce((s,o) => s+(o.items||[]).reduce((ss,i)=>ss+i.qty, 0), 0);
+  const lastOrder     = orders[0];
+  const lastDate      = lastOrder?.ordered_at ? new Date(lastOrder.ordered_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '—';
+
+  root.innerHTML = `
+    <div class="summary-strip">
+      <div class="sum-card">
+        <div class="sum-lbl">Total Orders</div>
+        <div class="sum-val">${orders.length}</div>
+        <div class="sum-sub">All time</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-lbl">Total Spent</div>
+        <div class="sum-val" style="color:var(--gold);">₹${totalSpent.toLocaleString('en-IN')}</div>
+        <div class="sum-sub">${totalItems} items ordered</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-lbl">Last Order</div>
+        <div class="sum-val" style="font-size:1.1rem;margin-top:0.2rem;">${lastDate}</div>
+        <div class="sum-sub">${lastOrder?.status || '—'}</div>
+      </div>
+    </div>
+    <div id="order-cards-list">
+      ${orders.map(o => buildOrderCard(o)).join('')}
+    </div>`;
+}
+
+function buildOrderCard(o) {
+  const d         = o.ordered_at ? new Date(o.ordered_at) : null;
+  const day       = d ? d.getDate() : '—';
+  const month     = d ? d.toLocaleDateString('en-IN',{month:'short'}) : '—';
+  const fullDate  = d ? d.toLocaleString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+  const oid       = String(o.id||0).slice(-6).toUpperCase();
+  const items     = o.items || [];
+  const preview   = items.slice(0,3).map(i=>`${i.icon||''}${i.name}`).join(', ') + (items.length>3 ? ` +${items.length-3} more` : '');
+  const subtotal  = items.reduce((s,i)=>s+(i.price*i.qty),0);
+  const tax       = Math.round(subtotal * 0.05);
+  const typeIcon  = o.order_type === 'pickup' ? '🏠 Self Pickup' : '🛵 Home Delivery';
+
+  const statusClass = {
+    Pending:'sp-pending', Preparing:'sp-preparing', Ready:'sp-ready', Delivered:'sp-delivered'
+  }[o.status] || 'sp-pending';
+
+  const itemsHtml = items.map(i => `
+    <div class="receipt-item">
+      <span class="ri-icon">${i.icon||'🍽'}</span>
+      <span class="ri-name">${i.name}</span>
+      <span class="ri-qty">×${i.qty}</span>
+      <span class="ri-unit">₹${i.price} each</span>
+      <span class="ri-total">₹${(i.price*i.qty).toLocaleString('en-IN')}</span>
+    </div>`).join('');
+
+  return `
+  <div class="order-card" id="my-ocard-${o.id}">
+    <div class="oc-head" onclick="toggleMyCard(${o.id})">
+      <div class="oc-date-block">
+        <div class="oc-day">${day}</div>
+        <div class="oc-month">${month}</div>
+      </div>
+      <div class="oc-divider"></div>
+      <div class="oc-info">
+        <div class="oc-id">ORDER #${oid}</div>
+        <div class="oc-items-preview">${preview}</div>
+      </div>
+      <div class="oc-right">
+        <span class="status-pill ${statusClass}">${o.status||'Pending'}</span>
+        <span class="oc-amount">₹${(o.total||0).toLocaleString('en-IN')}</span>
+        <span class="oc-arrow">▼</span>
+      </div>
+    </div>
+
+    <div class="oc-body">
+      <div class="receipt-paper">
+
+        <!-- Receipt Header -->
+        <div class="receipt-header">
+          <div class="rh-left">
+            <div class="rh-cafe-name">👁 <span>Red</span> Eye Café</div>
+            <div class="rh-addr">12, Red Eye Lane, Koregaon Park<br>Pune, Maharashtra 411001<br>+91 98765 43210</div>
+          </div>
+          <div class="rh-right">
+            <div class="rh-receipt-id">RECEIPT #${oid}</div>
+            <div class="rh-date">${fullDate}</div>
+            <div style="margin-top:0.5rem;"><span class="status-pill ${statusClass}">${o.status||'Pending'}</span></div>
+          </div>
+        </div>
+
+        <!-- Customer & Delivery Info -->
+        <div class="receipt-meta">
+          <div>
+            <div class="rm-lbl">Customer</div>
+            <div class="rm-val">
+              ${currentUser.name}<br>
+              <span style="font-size:0.75rem;color:var(--muted);">${currentUser.email}</span>
+            </div>
+          </div>
+          <div>
+            <div class="rm-lbl">Order Type</div>
+            <div class="rm-val">${typeIcon}</div>
+          </div>
+          <div style="grid-column:1/-1;">
+            <div class="rm-lbl">Delivery Address</div>
+            <div class="addr-box">${o.delivery_address || 'Self Pickup — Red Eye Café'}</div>
+          </div>
+        </div>
+
+        <!-- Items -->
+        <div class="receipt-items-lbl">Items Ordered</div>
+        ${itemsHtml}
+
+        <!-- Totals -->
+        <div class="receipt-totals">
+          <div class="rt-row"><span class="rt-lbl">Subtotal (${items.reduce((s,i)=>s+i.qty,0)} items)</span><span class="rt-val">₹${subtotal.toLocaleString('en-IN')}</span></div>
+          <div class="rt-row"><span class="rt-lbl">GST & Taxes (5%)</span><span class="rt-val">₹${tax.toLocaleString('en-IN')}</span></div>
+          ${o.order_type === 'delivery' ? `<div class="rt-row"><span class="rt-lbl">Delivery Fee</span><span class="rt-val" style="color:#27ae60;">FREE</span></div>` : ''}
+          <div class="rt-row rt-grand" style="margin-top:0.5rem;">
+            <span class="rt-lbl">Total Paid</span>
+            <span class="rt-val">₹${(o.total||subtotal).toLocaleString('en-IN')}</span>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="receipt-footer">
+          ✦ &nbsp;Thank you for choosing Red Eye Café&nbsp; ✦<br>
+          <span style="font-size:0.68rem;">We hope you enjoyed every sip and bite.</span>
+        </div>
+      </div>
+
+      <!-- Action bar -->
+      <div class="receipt-actions">
+        <button class="btn btn-outline" style="font-size:0.75rem;" onclick="printMyReceipt(${o.id})">🖨 Print Receipt</button>
+        <a href="menu.html"><button class="btn btn-gold" style="font-size:0.75rem;">Order Again →</button></a>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleMyCard(id) {
+  const card = document.getElementById(`my-ocard-${id}`);
+  if (card) card.classList.toggle('expanded');
+}
+
+function printMyReceipt(orderId) {
+  const card = document.getElementById(`my-ocard-${orderId}`);
+  if (!card) return;
+
+  // Find order from DOM receipt content
+  const paperEl = card.querySelector('.receipt-paper');
+  if (!paperEl) return;
+
+  const win = window.open('', '_blank', 'width=500,height=750');
+  win.document.write(`<!DOCTYPE html><html><head><title>Receipt</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:Arial,sans-serif;color:#111;padding:2rem;font-size:13px;}
+    .receipt-header{display:flex;justify-content:space-between;border-bottom:2px solid #111;padding-bottom:1rem;margin-bottom:1rem;}
+    .cafe-name{font-size:1.3rem;font-weight:900;}
+    .cafe-addr{font-size:0.72rem;color:#666;margin-top:0.2rem;line-height:1.5;}
+    .receipt-id{font-family:monospace;font-size:0.78rem;color:#666;}
+    .date{font-size:0.72rem;color:#666;margin-top:0.2rem;}
+    .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+    .m-lbl{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.1em;color:#888;margin-bottom:0.2rem;}
+    .m-val{font-size:0.82rem;}
+    .addr-box{background:#f5f5f5;padding:0.5rem 0.7rem;border-radius:3px;font-size:0.78rem;color:#555;margin-top:0.3rem;line-height:1.5;}
+    .items-lbl{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.1em;color:#888;border-top:1px solid #ddd;padding-top:0.8rem;margin-bottom:0.5rem;}
+    .item{display:flex;gap:0.5rem;padding:0.4rem 0;border-bottom:1px dashed #ddd;font-size:0.82rem;}
+    .item:last-child{border-bottom:none;}
+    .i-name{flex:1;}
+    .i-qty{color:#888;min-width:28px;text-align:center;}
+    .i-price{font-weight:600;min-width:60px;text-align:right;}
+    .totals{border-top:2px solid #111;margin-top:0.5rem;padding-top:0.8rem;}
+    .trow{display:flex;justify-content:space-between;margin-bottom:0.3rem;font-size:0.82rem;}
+    .grand{font-size:1.1rem;font-weight:900;margin-top:0.3rem;border-top:1px solid #ccc;padding-top:0.5rem;}
+    .footer{text-align:center;margin-top:1.5rem;font-size:0.72rem;color:#888;border-top:1px dashed #ddd;padding-top:1rem;}
+    .status{display:inline-block;padding:0.15rem 0.6rem;border-radius:10px;background:#e8f8e8;color:#27ae60;font-size:0.7rem;font-weight:700;border:1px solid #27ae60;}
+  </style></head><body>
+  ${paperEl.innerHTML.replace(/class="[^"]*"/g, style => {
+    // strip CSS classes, print version is self-styled
+    return '';
+  })}
+  </body></html>`);
+
+  // Simpler approach: build print HTML from scratch using DOM data
+  win.document.close();
+  win.close();
+
+  // Re-open with clean version
+  const o_data = `Order from receipt`;
+  const printWin = window.open('', '_blank', 'width=500,height=750');
+  const receiptText = paperEl.innerText;
+  printWin.document.write(`<!DOCTYPE html><html><head><title>Receipt</title>
+  <style>body{font-family:Arial,sans-serif;padding:2rem;font-size:13px;color:#111;white-space:pre-wrap;}</style>
+  </head><body>${paperEl.innerHTML
+    .replace(/<div class="receipt-footer">/g,'<div style="text-align:center;margin-top:1rem;font-size:0.72rem;color:#888;border-top:1px dashed #ccc;padding-top:0.8rem;">')
+    .replace(/<div class="receipt-header">/g,'<div style="display:flex;justify-content:space-between;border-bottom:2px solid #111;padding-bottom:1rem;margin-bottom:1rem;">')
+    .replace(/<div class="receipt-item">/g,'<div style="display:flex;gap:0.5rem;padding:0.4rem 0;border-bottom:1px dashed #ddd;">')
+    .replace(/<div class="receipt-totals">/g,'<div style="border-top:2px solid #111;padding-top:0.8rem;margin-top:0.5rem;">')
+    .replace(/<span class="[^"]*">/g,'<span>')
+    .replace(/<div class="[^"]*">/g,'<div>')
+  }</body></html>`);
+  printWin.document.close();
+  printWin.focus();
+  setTimeout(() => printWin.print(), 300);
+}
+
+// ── On load ───────────────────────────────────────────
+loadMyOrders();
+</script>
+</body>
+</html>

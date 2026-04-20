@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red Eye Café — Contact</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">👁 <span>Red</span> Eye Café</a>
+  <ul class="nav-links">
+    <li><a href="index.html" data-page="index.html">Home</a></li>
+    <li><a href="menu.html" data-page="menu.html">Menu</a></li>
+    <li><a href="about.html" data-page="about.html">About Us</a></li>
+    <li><a href="orders.html" data-page="orders.html">My Orders</a></li>
+    <li><a href="contact.html" data-page="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <div id="auth-btns" style="display:flex; gap:0.5rem;">
+      <a href="auth.html"><button class="btn btn-outline">Login</button></a>
+      <a href="auth.html?tab=register"><button class="btn btn-red">Register</button></a>
+    </div>
+    <div id="user-display" style="display:none;" class="user-indicator">
+      <span>👤</span> <span id="username-text"></span>
+      <button class="btn btn-outline" onclick="logout()" style="margin-left:0.5rem; padding:0.35rem 0.8rem; font-size:0.72rem;">Logout</button>
+    </div>
+    <button class="cart-btn" onclick="toggleCart()">
+      🛒 <span class="cart-badge" id="cart-badge" style="display:none">0</span>
+    </button>
+  </div>
+</nav>
+
+<div style="padding-top:70px;">
+  <div class="contact-grid">
+    <div class="contact-info">
+      <span class="section-eyebrow">Get in Touch</span>
+      <h1>We'd love to hear from you.</h1>
+      <p>Whether it's a question about our beans, a bulk order inquiry, or just to say hello — drop us a line. We reply within 24 hours.</p>
+      <div class="contact-detail">
+        <span class="contact-icon">📍</span>
+        <div>
+          <div class="contact-label">Location</div>
+          <div class="contact-value">12, Red Eye Lane, Koregaon Park<br>Pune, Maharashtra 411001</div>
+        </div>
+      </div>
+      <div class="contact-detail">
+        <span class="contact-icon">📞</span>
+        <div>
+          <div class="contact-label">Phone</div>
+          <div class="contact-value">+91 98765 43210</div>
+        </div>
+      </div>
+      <div class="contact-detail">
+        <span class="contact-icon">✉️</span>
+        <div>
+          <div class="contact-label">Email</div>
+          <div class="contact-value">hello@redeyecafe.in</div>
+        </div>
+      </div>
+      <div class="contact-detail">
+        <span class="contact-icon">🕐</span>
+        <div>
+          <div class="contact-label">Hours</div>
+          <div class="contact-value">Mon–Sun: 7:00 AM – 10:00 PM</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form-wrap">
+      <h3 style="font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--cream); margin-bottom:1.5rem;">Send a Message</h3>
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="c-name" placeholder="John Doe">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="c-email" placeholder="john@example.com">
+      </div>
+      <div class="form-group">
+        <label>Subject</label>
+        <input type="text" id="c-subject" placeholder="What's on your mind?">
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea id="c-msg" placeholder="Tell us anything..."></textarea>
+      </div>
+      <button class="btn btn-gold btn-full" onclick="sendContact()">Send Message →</button>
+    </div>
+  </div>
+</div>
+
+<!-- CART SIDEBAR -->
+<div class="cart-sidebar" id="cart-sidebar">
+  <div class="cart-header">
+    <div class="cart-title">Your Order 🛒</div>
+    <button class="cart-close" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items-list"></div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span>Total</span>
+      <span class="cart-total-price" id="cart-total">₹0</span>
+    </div>
+    <button class="btn btn-gold btn-full" onclick="placeOrder()">Place Order →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="script.js"></script>
+<script>
+  async function sendContact() {
+    const name    = document.getElementById('c-name').value.trim();
+    const email   = document.getElementById('c-email').value.trim();
+    const subject = document.getElementById('c-subject').value.trim();
+    const message = document.getElementById('c-msg').value.trim();
+
+    if (!name || !email) { showToast('Please fill name and email'); return; }
+
+    const res  = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, subject, message })
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('c-name').value = '';
+      document.getElementById('c-email').value = '';
+      document.getElementById('c-subject').value = '';
+      document.getElementById('c-msg').value = '';
+      showToast('✉️ Message sent! We\'ll reply soon.');
+    } else {
+      showToast(data.message);
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red Eye Café — Menu</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .menu-card-img-real {
+      height: 160px; overflow: hidden; position: relative;
+    }
+    .menu-card-img-real img {
+      width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s;
+    }
+    .menu-card:hover .menu-card-img-real img { transform: scale(1.06); }
+    .menu-card-img-real .img-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(10,7,5,0.55) 0%, transparent 60%);
+    }
+    .unavailable-badge {
+      position: absolute; top: 0.6rem; right: 0.6rem;
+      background: rgba(192,57,43,0.9); color: #fff;
+      font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.2rem 0.55rem; border-radius: 20px;
+    }
+    .cat-pill {
+      position: absolute; top: 0.6rem; left: 0.6rem;
+      padding: 0.18rem 0.55rem; border-radius: 20px;
+      font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600;
+    }
+    .pill-coffee     { background: rgba(192,57,43,0.85); color: #fff; }
+    .pill-colddrinks { background: rgba(41,128,185,0.85); color: #fff; }
+    .pill-food       { background: rgba(39,174,96,0.85); color: #fff; }
+    .pill-desserts   { background: rgba(212,168,83,0.85); color: #0a0705; }
+    .menu-card.unavailable { opacity: 0.5; pointer-events: none; }
+    .add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">👁 <span>Red</span> Eye Café</a>
+  <ul class="nav-links">
+    <li><a href="index.html" data-page="index.html">Home</a></li>
+    <li><a href="menu.html" data-page="menu.html">Menu</a></li>
+    <li><a href="about.html" data-page="about.html">About Us</a></li>
+    <li><a href="orders.html" data-page="orders.html">My Orders</a></li>
+    <li><a href="contact.html" data-page="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <div id="auth-btns" style="display:flex;gap:0.5rem;">
+      <a href="auth.html"><button class="btn btn-outline">Login</button></a>
+      <a href="auth.html?tab=register"><button class="btn btn-red">Register</button></a>
+    </div>
+    <div id="user-display" style="display:none;" class="user-indicator">
+      <span>👤</span> <span id="username-text"></span>
+      <button class="btn btn-outline" onclick="logout()" style="margin-left:0.5rem;padding:0.35rem 0.8rem;font-size:0.72rem;">Logout</button>
+    </div>
+    <button class="cart-btn" onclick="toggleCart()">
+      🛒 <span class="cart-badge" id="cart-badge" style="display:none">0</span>
+    </button>
+  </div>
+</nav>
+
+<div class="page-header">
+  <span class="section-eyebrow">Our offerings</span>
+  <h1>The Menu</h1>
+  <p>Every item made with precision, passion, and a touch of darkness.</p>
+</div>
+
+<div class="menu-tabs">
+  <button class="menu-tab active" onclick="filterMenu('all', this)">All</button>
+  <button class="menu-tab" onclick="filterMenu('coffee', this)">Coffee</button>
+  <button class="menu-tab" onclick="filterMenu('colddrinks', this)">Cold Drinks</button>
+  <button class="menu-tab" onclick="filterMenu('food', this)">Food</button>
+  <button class="menu-tab" onclick="filterMenu('desserts', this)">Desserts</button>
+</div>
+
+<div class="menu-grid" id="menu-grid"></div>
+
+<div class="cart-sidebar" id="cart-sidebar">
+  <div class="cart-header">
+    <div class="cart-title">Your Order 🛒</div>
+    <button class="cart-close" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items-list"></div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span>Total</span>
+      <span class="cart-total-price" id="cart-total">₹0</span>
+    </div>
+    <button class="btn btn-gold btn-full" onclick="placeOrder()">Place Order →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="script.js"></script>
+<script>
+  function catPill(cat) {
+    const labels = { coffee:'Coffee', colddrinks:'Cold', food:'Food', desserts:'Dessert' };
+    return `<span class="cat-pill pill-${cat}">${labels[cat]||cat}</span>`;
+  }
+
+  function renderMenu(filter = 'all') {
+    const grid = document.getElementById('menu-grid');
+    // Always read from live menu (reflects admin changes)
+    const liveItems = getLiveMenu();
+    const items = filter === 'all' ? liveItems : liveItems.filter(i => i.cat === filter);
+
+    if (items.length === 0) {
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:4rem;color:var(--muted);">No items in this category.</div>`;
+      return;
+    }
+
+    grid.innerHTML = items.map(item => `
+      <div class="menu-card${item.available === false ? ' unavailable' : ''}">
+        <div class="menu-card-img-real">
+          <img src="${item.img || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80'}"
+               alt="${item.name}"
+               loading="lazy"
+               onerror="this.src='https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80'" />
+          <div class="img-overlay"></div>
+          ${catPill(item.cat)}
+          ${item.available === false ? '<span class="unavailable-badge">Unavailable</span>' : ''}
+        </div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">${item.name}</div>
+          <div class="menu-card-desc">${item.desc}</div>
+        </div>
+        <div class="menu-card-footer">
+          <span class="menu-price">₹${item.price}</span>
+          <button class="add-btn" onclick="addToCart('${item.name}','${item.icon}',${item.price})" ${item.available === false ? 'disabled' : ''}>+</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterMenu(cat, el) {
+    document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    renderMenu(cat);
+  }
+
+  renderMenu();
+</script>
+</body>
+</html>

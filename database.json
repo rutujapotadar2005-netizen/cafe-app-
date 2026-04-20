@@ -1,0 +1,140 @@
+{
+  "users": [
+    {
+      "id": 1772609905606,
+      "name": "Rutuja Potadar",
+      "email": "rutuja@gmail.com",
+      "phone": "4265877899",
+      "password": "hiuhsrcug",
+      "joined": "2026-03-04T07:38:25.606Z"
+    },
+    {
+      "id": 1772615784998,
+      "name": "Rutuja Potadar",
+      "email": "riya@gmail.com",
+      "phone": "4265877899",
+      "password": "tvgdr5d",
+      "joined": "2026-03-04T09:16:24.998Z"
+    },
+    {
+      "id": 1772644170680,
+      "name": "Rutuja Potadar",
+      "email": "riy@gmail.com",
+      "phone": "4265877899",
+      "password": "chytiu",
+      "joined": "2026-03-04T17:09:30.680Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": 1772609931720,
+      "user_email": "rutuja@gmail.com",
+      "items": [
+        {
+          "name": "Dark Velvet Latte",
+          "icon": "🌙",
+          "price": 380,
+          "qty": 1
+        },
+        {
+          "name": "Croque Monsieur",
+          "icon": "🥪",
+          "price": 380,
+          "qty": 1
+        }
+      ],
+      "total": 760,
+      "delivery_address": "nfewqjkafc, kanpur - 453453 (Near: gjf yukjg)",
+      "order_type": "delivery",
+      "status": "Pending",
+      "ordered_at": "2026-03-04T07:38:51.720Z"
+    },
+    {
+      "id": 1772609972144,
+      "user_email": "rutuja@gmail.com",
+      "items": [
+        {
+          "name": "Midnight Mocha",
+          "icon": "🍫",
+          "price": 360,
+          "qty": 1
+        },
+        {
+          "name": "Mushroom Bruschetta",
+          "icon": "🍄",
+          "price": 290,
+          "qty": 1
+        }
+      ],
+      "total": 650,
+      "delivery_address": "nfewqjkafc, kanpur - 453453 (Near: gjf yukjg)",
+      "order_type": "delivery",
+      "status": "Pending",
+      "ordered_at": "2026-03-04T07:39:32.144Z"
+    },
+    {
+      "id": 1772613859632,
+      "user_email": "rutuja@gmail.com",
+      "items": [
+        {
+          "name": "Red Eye Espresso",
+          "icon": "☕",
+          "price": 320,
+          "qty": 1
+        }
+      ],
+      "total": 320,
+      "delivery_address": "nfewqjkafc, kanpur - 453453 (Near: gjf yukjg)",
+      "order_type": "delivery",
+      "status": "Pending",
+      "ordered_at": "2026-03-04T08:44:19.632Z"
+    },
+    {
+      "id": 1772615810585,
+      "user_email": "riya@gmail.com",
+      "items": [
+        {
+          "name": "Red Eye Espresso",
+          "icon": "☕",
+          "price": 320,
+          "qty": 1
+        }
+      ],
+      "total": 320,
+      "delivery_address": "nfewqjkafc, kanpur - 453453 (Near: gjf yukjg)",
+      "order_type": "delivery",
+      "status": "Pending",
+      "ordered_at": "2026-03-04T09:16:50.585Z"
+    },
+    {
+      "id": 1772644209160,
+      "user_email": "riy@gmail.com",
+      "items": [
+        {
+          "name": "Red Eye Espresso",
+          "icon": "☕",
+          "price": 320,
+          "qty": 1
+        },
+        {
+          "name": "Mushroom Bruschetta",
+          "icon": "🍄",
+          "price": 290,
+          "qty": 1
+        },
+        {
+          "name": "Crimson Cheesecake",
+          "icon": "🍰",
+          "price": 280,
+          "qty": 1
+        }
+      ],
+      "total": 890,
+      "delivery_address": "nfewqjkafc, kanpur - 453453 (Near: gjf yukjg)",
+      "order_type": "delivery",
+      "status": "Pending",
+      "ordered_at": "2026-03-04T17:10:09.160Z"
+    }
+  ],
+  "contacts": []
+}

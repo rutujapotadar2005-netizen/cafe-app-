@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red Eye Café — Home</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">👁 <span>Red</span> Eye Café</a>
+  <ul class="nav-links">
+    <li><a href="index.html" data-page="index.html">Home</a></li>
+    <li><a href="menu.html" data-page="menu.html">Menu</a></li>
+    <li><a href="about.html" data-page="about.html">About Us</a></li>
+    <li><a href="orders.html" data-page="orders.html">My Orders</a></li>
+    <li><a href="contact.html" data-page="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <div id="auth-btns" style="display:flex; gap:0.5rem;">
+      <a href="auth.html"><button class="btn btn-outline">Login</button></a>
+      <a href="auth.html?tab=register"><button class="btn btn-red">Register</button></a>
+    </div>
+    <div id="user-display" style="display:none;" class="user-indicator">
+      <span>👤</span> <span id="username-text"></span>
+      <button class="btn btn-outline" onclick="logout()" style="margin-left:0.5rem; padding:0.35rem 0.8rem; font-size:0.72rem;">Logout</button>
+    </div>
+    <button class="cart-btn" onclick="toggleCart()">
+      🛒 <span class="cart-badge" id="cart-badge" style="display:none">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grain"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">☕ Est. 2019 · Premium Coffee Experience</p>
+    <h1 class="hero-title">
+      Wake Up.<br>
+      <span class="accent">Red Eye</span><br>
+      Café.
+    </h1>
+    <p class="hero-sub">Where every sip tells a story. Dark, bold, unforgettable.</p>
+    <div class="hero-actions">
+      <a href="menu.html"><button class="btn btn-gold" style="padding:0.8rem 2rem; font-size:0.85rem;">Explore Menu</button></a>
+      <a href="about.html"><button class="btn btn-outline" style="padding:0.8rem 2rem; font-size:0.85rem;">Our Story</button></a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- FEATURES STRIP -->
+<div class="features-strip">
+  <div class="feature-item">
+    <span class="feature-icon">🌱</span>
+    <div class="feature-title">Ethically Sourced</div>
+    <p class="feature-desc">Beans hand-picked from sustainable farms across Ethiopia, Colombia & Guatemala.</p>
+  </div>
+  <div class="feature-item">
+    <span class="feature-icon">🔥</span>
+    <div class="feature-title">Master Roasters</div>
+    <p class="feature-desc">Roasted in-house daily for maximum freshness and the deepest flavor profiles.</p>
+  </div>
+  <div class="feature-item">
+    <span class="feature-icon">🚀</span>
+    <div class="feature-title">Fast Delivery</div>
+    <p class="feature-desc">Order online and have your favorites at your table or door within minutes.</p>
+  </div>
+</div>
+
+<!-- FEATURED ITEMS -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-eyebrow">Chef's picks</span>
+    <h2 class="section-title">Today's Highlights</h2>
+  </div>
+  <div class="featured-grid">
+    <div class="featured-card">
+      <div class="card-img">☕</div>
+      <div class="card-body">
+        <div class="card-name">Red Eye Espresso</div>
+        <div class="card-desc">Our signature double-shot with silky crema. Bold, dark, intense.</div>
+        <div class="card-footer">
+          <span class="card-price">₹320</span>
+          <button class="btn btn-red" style="padding:0.4rem 1rem; font-size:0.75rem;" onclick="addToCart('Red Eye Espresso','☕',320)">Order</button>
+        </div>
+      </div>
+    </div>
+    <div class="featured-card">
+      <div class="card-img">🌙</div>
+      <div class="card-body">
+        <div class="card-name">Dark Velvet Latte</div>
+        <div class="card-desc">Activated charcoal-kissed latte with oat milk and a whisper of vanilla.</div>
+        <div class="card-footer">
+          <span class="card-price">₹380</span>
+          <button class="btn btn-red" style="padding:0.4rem 1rem; font-size:0.75rem;" onclick="addToCart('Dark Velvet Latte','🌙',380)">Order</button>
+        </div>
+      </div>
+    </div>
+    <div class="featured-card">
+      <div class="card-img">🍰</div>
+      <div class="card-body">
+        <div class="card-name">Crimson Cheesecake</div>
+        <div class="card-desc">Velvety red velvet cheesecake with a buttery graham crust & berry drizzle.</div>
+        <div class="card-footer">
+          <span class="card-price">₹280</span>
+          <button class="btn btn-red" style="padding:0.4rem 1rem; font-size:0.75rem;" onclick="addToCart('Crimson Cheesecake','🍰',280)">Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <span class="logo">👁 <span>Red</span> Eye Café</span>
+    <p>A sanctuary for those who appreciate the art of coffee. Crafted with obsession, served with warmth.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Navigate</h4>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="menu.html">Menu</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="orders.html" data-page="orders.html">My Orders</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Hours</h4>
+    <ul>
+      <li><a>Mon–Fri: 7am–10pm</a></li>
+      <li><a>Saturday: 8am–11pm</a></li>
+      <li><a>Sunday: 9am–9pm</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Connect</h4>
+    <ul>
+      <li><a>Instagram</a></li>
+      <li><a>Facebook</a></li>
+      <li><a>Twitter</a></li>
+      <li><a>TripAdvisor</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <span>© 2025 Red Eye Café. All rights reserved.</span>
+  <span>Crafted with ☕ & obsession</span>
+</div>
+
+<!-- CART SIDEBAR -->
+<div class="cart-sidebar" id="cart-sidebar">
+  <div class="cart-header">
+    <div class="cart-title">Your Order 🛒</div>
+    <button class="cart-close" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items-list"></div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span>Total</span>
+      <span class="cart-total-price" id="cart-total">₹0</span>
+    </div>
+    <button class="btn btn-gold btn-full" onclick="placeOrder()">Place Order →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="script.js"></script>
+</body>
+</html>

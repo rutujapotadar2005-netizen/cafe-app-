@@ -8,7 +8,7 @@ const DB   = path.join(__dirname, 'database.json');
 
 // ── Middleware ──────────────────────────────────────────────
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname)));
 
 // ── JSON Database Helpers ───────────────────────────────────
 function readDB() {

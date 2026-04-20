@@ -131,6 +131,17 @@ app.post('/api/contact', (req, res) => {
   res.json({ success: true, message: 'Message sent successfully!' });
 });
 
+
+// ── ADMIN LOGIN CHECK ──────────────────────────
+app.post('/api/admin/login', (req, res) => {
+  const { password } = req.body;
+  if (password === 'redeye@admin123') {
+    res.json({ success: true });
+  } else {
+    res.json({ success: false, message: 'Wrong password!' });
+  }
+});
+
 // ── Catch-all → index.html ───────────────────────────────────
 app.get('*', (req, res) => {
 res.sendFile(path.join(__dirname, 'index.html'));

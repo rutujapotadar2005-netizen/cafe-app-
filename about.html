@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red Eye Café — About Us</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">👁 <span>Red</span> Eye Café</a>
+  <ul class="nav-links">
+    <li><a href="index.html" data-page="index.html">Home</a></li>
+    <li><a href="menu.html" data-page="menu.html">Menu</a></li>
+    <li><a href="about.html" data-page="about.html">About Us</a></li>
+    <li><a href="orders.html" data-page="orders.html">My Orders</a></li>
+    <li><a href="contact.html" data-page="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <div id="auth-btns" style="display:flex; gap:0.5rem;">
+      <a href="auth.html"><button class="btn btn-outline">Login</button></a>
+      <a href="auth.html?tab=register"><button class="btn btn-red">Register</button></a>
+    </div>
+    <div id="user-display" style="display:none;" class="user-indicator">
+      <span>👤</span> <span id="username-text"></span>
+      <button class="btn btn-outline" onclick="logout()" style="margin-left:0.5rem; padding:0.35rem 0.8rem; font-size:0.72rem;">Logout</button>
+    </div>
+    <button class="cart-btn" onclick="toggleCart()">
+      🛒 <span class="cart-badge" id="cart-badge" style="display:none">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ABOUT HERO -->
+<div class="about-hero" style="padding-top:5rem;">
+  <div class="about-text">
+    <span class="section-eyebrow">Our Story</span>
+    <h1>Born from a <em>restless</em> love for coffee.</h1>
+    <p>Red Eye Café was born in 2019 from a single obsession: the perfect cup. Founded by two coffee-fanatic friends who couldn't sleep — not from insomnia, but from excitement about the world of specialty coffee — we set out to create a space unlike any other.</p>
+    <p>We named it after the "red eye" — a shot of espresso in drip coffee, for those who need to push through. It became our philosophy: bold, energetic, unapologetic. We source only from farms we've visited, roast only what we'd drink ourselves, and serve only what we're proud of.</p>
+    <p>Today, Red Eye is more than a café. It's a community of early risers, late-night creators, and everyone in between who believes that a great cup of coffee can change your day.</p>
+    <a href="menu.html"><button class="btn btn-gold" style="margin-top:1rem;">Explore Our Menu →</button></a>
+  </div>
+  <div class="about-visual">☕</div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-item">
+    <div class="stat-num">12+</div>
+    <div class="stat-label">Coffee Origins</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">50k+</div>
+    <div class="stat-label">Happy Customers</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">6</div>
+    <div class="stat-label">Years Running</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">4.9★</div>
+    <div class="stat-label">Average Rating</div>
+  </div>
+</div>
+
+<!-- CART SIDEBAR -->
+<div class="cart-sidebar" id="cart-sidebar">
+  <div class="cart-header">
+    <div class="cart-title">Your Order 🛒</div>
+    <button class="cart-close" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items-list"></div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span>Total</span>
+      <span class="cart-total-price" id="cart-total">₹0</span>
+    </div>
+    <button class="btn btn-gold btn-full" onclick="placeOrder()">Place Order →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="script.js"></script>
+</body>
+</html>
